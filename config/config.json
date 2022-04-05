@@ -1,0 +1,17 @@
+{
+    "NOTIFICATION":{
+        "token": "xoxb-********-**********-*********",
+        "channel": "**********"
+    },
+    "APP":{
+        "weight_name": "yolox_tiny",
+        "weight_file": "YOLOX/weights/yolox_tiny.pth",
+        "set_timer": 5,
+        "allow_notification": "False"
+
+    },
+    "MAIN":{
+        "camera_num": 0,
+        "target_class": 0
+    }
+}
