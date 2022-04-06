@@ -1,11 +1,15 @@
 # パソコンの前にいるのは何！？　〜YOLOX + openCV〜
 カメラに映り込むターゲットを検知してSlack通知を行います。  
 
-# Demo
+# Demo　　
 ```
 python run.py
 ```  
-<br>
+
+
+###  開発環境  
+- MacBook Pro M1(macOS Big Sur)
+- python 3.9.7(anaconda)  
 <br>
 
 # 導入方法
@@ -15,6 +19,7 @@ python run.py
 YOLOXのリポジトリをクローンします。  
 ```
 git clone git@github.com:Megvii-BaseDetection/YOLOX.git
+cd YOLOX
 ```
 必要パッケージをインストールします。
 ```
@@ -38,8 +43,8 @@ https://yolox.readthedocs.io/en/latest/model_zoo.html
 config/config.json  
 で設定を行います。  
 <br>
-token               :   botトークン ex.xoxb-*********-*********-***********  
-cahnnel             :   通知したいチャンネル名 ex.#notification  
+token               :   Slackのbotトークン ex.xoxb-*********-*********-***********  
+channel             :   Slackの通知したいチャンネル名 ex.#notification  
 weight_name         :   学習済みモデル名  ex.yolox_tiny  
 weight_file         :   学習済みモデルのパス ex.YOLOX/weights/yolox_tiny.pth  
 set_timer           :   通知する際のターゲットの滞在時間 ex.5(ターゲットが５秒滞在すると通知されます。)  
