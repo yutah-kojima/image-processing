@@ -1,71 +1,73 @@
 # coding: utf-8
 
-from logging import getLogger
-import cv2
-import copy
 import time
+import copy
+import torch
 import importlib
-import json
+from logging import getLogger
 
-from apps.predictor import Predictor
+import cv2
 
 from apps.notify import Notification
+from apps.predictor import Predictor
 
-import torch
 
 class App:
-    def __init__(self, num = 0):
+    def __init__(self, config):
         self.logger = getLogger(__name__)
         self.notification = Notification()
-        with open('./config/config.json','r') as config_file:
-            config = json.load(config_file)
-            APP = config["APP"]
-            self.weight_name = APP["weight_name"]
-            self.weight_file = APP["weight_file"]
-            self.set_timer = APP["set_timer"]
-            self.allow_notification = APP["allow_notification"]  
-
-
-        self.cap = cv2.VideoCapture(num)
+        # 設定
+        APP = config["APP"]
+        camera_num = APP["camera_num"]
+        self.target_class = APP["target_class"]
+        module_name = APP["weight_name"]
+        self.exp = importlib.import_module(module_name).Exp()
+        self.weight_file = APP["weight_file"]
+        self.set_timer = APP["set_timer"]
+        self.allow_notification = APP["allow_notification"]  
+        self.cap = cv2.VideoCapture(camera_num)
         if self.cap.isOpened() == False:
             self.logger.error('カメラにアクセス出来ません。')
             raise Error('カメラにアクセス出来ません。')
         self.logger.info('Success activate camera')
         
+    """   
     def get_exp_by_name(self, exp_name):
         module_name = ".".join(["yolox", "exp", "default", exp_name])
         exp_object = importlib.import_module(module_name).Exp()
         return exp_object
-
+    """
     
-    def detect(self, target = 0):
+    def detect(self):
             
-        exp = self.get_exp_by_name(self.weight_name)
-
-        #この辺何やってるかわかりません。
-        model = exp.get_model()
+        # exp = self.get_exp_by_name(self.weight_name)
+        
+        
+        # この辺何やってるかわかりません。
+        model = self.exp.get_model()
         model.eval()
         
-        #推論モデルの読み込み？
+        # 推論モデルの読み込み？
         self.logger.info("loading checkpoint")
         checkpoint = torch.load(self.weight_file, map_location="cpu")
         model.load_state_dict(checkpoint["model"])
         self.logger.info("loaded checkpoint done.")
         
-        predictor = Predictor(model, exp)
+        predictor = Predictor(model, self.exp)
         
         start_time = time.time()
         staying_time = 0
         target_was_there = False
+        count_no_frame = 0
         while True:
-            #Capture frame-by-frame
-            #try文　いまいち使い方が分からない。
-            try:
-                ret, frame = self.cap.read()
-            except Exception:
-                raise Error(self.logger.error('フレームが取得できません。'))
+            # Capture frame-by-frame
+            ret, frame = self.cap.read()
+            if frame == None:
+                count_no_frame += 1
+                if count_no_frame == 3:
+                    raise Error(self.logger.error('フレームが取得できません。'))
             """
-            #一応上記の元コード
+            # 一応上記の元コード
             ret, frame = self.cap.read()
             if not ret:
                 print("フレームが取得できません。")
@@ -77,37 +79,37 @@ class App:
             outputs, img_info = predictor.inference(frame)
             
             detected_list = []
-            #推論結果
+            # 推論結果
             if outputs[0] != None:
                 # デバッグ描画
                 result_frame, detected_list = predictor.visual(outputs[0], img_info)
                 
                 for i in detected_list:
-                    #ターゲットがいる場合、クラス取得＆滞留時間測定開始
-                    if target in i:
-                        target_class = i[1]
+                    # ターゲットがいる場合、クラス取得＆滞留時間測定開始
+                    if self.target_class in i:
+                        target_class_name = i[1]
                         staying_time = time.time() - start_time
-                        self.logger.info('{} has been staying for {:.2f}s'.format(target_class, staying_time))
-                        #滞留時間とターゲットの有無でSlackへ画像送信
+                        self.logger.info('{} has been staying for {:.2f}s'.format(target_class_name, staying_time))
+                        # 滞留時間とターゲットの有無でSlackへ画像送信
                         if staying_time >= self.set_timer and target_was_there == False:
                             target_was_there = True
-                            self.logger.info('There is {}!'.format(target_class)) 
+                            self.logger.info('There is {}!'.format(target_class_name)) 
                             image = cv2.imwrite('./static/image.png', frame)
                             if self.allow_notification == True:
-                                self.notification.send_found_target_message(image, target_class)
-                    #ターゲット以外がいる場合
-                    elif target in i == False:
+                                self.notification.send_found_target_message(image, target_class_name)
+                    # ターゲット以外がいる場合
+                    elif self.target_class in i == False:
                         if target_was_there == True:
                             self.logger.info('People left from here')
                             if self.allow_notification == True:
-                                self.notification.send_target_left_message(target_class, staying_time)
+                                self.notification.send_target_left_message(target_class_name, staying_time)
                         staying_time = 0
                         start_time = time.time()
                         target_was_there = False
-            #推論結果がない場合
+            # 推論結果がない場合
             else:
                 if target_was_there == True:
-                    self.notification.send_target_left_message(target_class, staying_time)
+                    self.notification.send_target_left_message(target_class_name, staying_time)
                     self.logger.info('People left from here')
                 staying_time = 0
                 start_time = time.time()
@@ -121,7 +123,7 @@ class App:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
         
-        #終了処理
+        # 終了処理
         self.cap.release()
         cv2.destroyAllWindows()
         self.logger.info('normal termination')
