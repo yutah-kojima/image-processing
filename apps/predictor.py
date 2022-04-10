@@ -53,18 +53,17 @@ class Predictor(object):
     def visual(self, output, img_info, cls_conf=0.35):
         ratio = img_info["ratio"]
         img = img_info["raw_img"]
+        detected_list = []
         if output is None:
-            return img
+            return img, detected_list
         output = output.cpu()
         bboxes = output[:, 0:4]
         # preprocessing: resize
         bboxes /= ratio
         cls = output[:, 6]
-        detected_list = [['ids','names']]
         for i in range(len(cls)):
             class_id = int(cls[i])
-            class_name = self.cls_names[class_id]
-            detected_list.append([class_id, class_name])
+            detected_list.append(class_id)
         scores = output[:, 4] * output[:, 5]
         vis_res = vis(img, bboxes, scores, cls, cls_conf, self.cls_names)
         return vis_res, detected_list
