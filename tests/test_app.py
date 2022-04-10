@@ -1,5 +1,6 @@
-from apps.app import App
 import json
+
+from apps.app import App
 
 def test_config():
     with open('./config/config.json','r') as config_file:

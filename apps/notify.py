@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from slack_sdk import WebClient
 import os
-from datetime import datetime
 import time
 from logging import getLogger
+
+from datetime import datetime
+from slack_sdk import WebClient
 
 class Notification:
     def __init__(self, config):

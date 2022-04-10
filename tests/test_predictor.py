@@ -1,9 +1,13 @@
-from apps.predictor import Predictor
-from apps.app import App
+# coding: utf-8
+
 import json
+
 import cv2
 import torch
 import numpy
+
+from apps.app import App
+from apps.predictor import Predictor
 
 with open('./config/config.json','r') as config_file:
     config = json.load(config_file)

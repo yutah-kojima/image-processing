@@ -12,6 +12,7 @@ with open(PATH_CONFIG,'r') as config_file:
 with open(PATH_LOG_CONFIG, 'r') as log_config_file:
     log_config = json.load(log_config_file)
 
+# python run.pyで実行
 if __name__ == "__main__":
     main.main(config, log_config)
 

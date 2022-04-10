@@ -1,6 +1,7 @@
 import json
 
 import pytest
+
 from apps.notify import Notification
 
 def test_config():
