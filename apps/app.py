@@ -15,7 +15,7 @@ from yolox.data.datasets import COCO_CLASSES
 class App:
     def __init__(self, config):
         self.logger = getLogger(__name__)
-        self.notification = Notification()
+        self.notification = Notification(config)
         # 設定
         APP = config["APP"]
         camera_num = APP["camera_num"]
@@ -29,7 +29,7 @@ class App:
         self.cap = cv2.VideoCapture(camera_num)
         if self.cap.isOpened() == False:
             self.logger.error('カメラにアクセス出来ません。')
-            raise Error('カメラにアクセス出来ません。')
+            raise Camera_error()
         self.logger.info('Success activate camera')
             
     def detect(self):
@@ -49,13 +49,15 @@ class App:
         found_target_first_time = True
         first_notification = False
         count_no_frame = 0
+        PATH_IMG = "./static/image.png"
         while True:
             # Capture frame-by-frame
             ret, frame = self.cap.read()
             if ret == False:
                 count_no_frame += 1
                 if count_no_frame == 3:
-                    raise Error(self.logger.error('フレームが取得できません。'))
+                    self.logger.error('フレームが取得できません。')
+                    raise Camera_error()
             else:
                 result_frame = copy.deepcopy(frame)
                 # 推論実施
@@ -77,9 +79,9 @@ class App:
                     if staying_timer >= self.set_timer and first_notification == True:
                         first_notification = False
                         self.logger.info('{} has stayed over {:.0f}s!'.format(self.target_class_name, staying_timer)) 
-                        image = cv2.imwrite('./static/image.png', frame)
+                        cv2.imwrite(PATH_IMG, frame)
                         if self.allow_notification == True:
-                            self.notification.send_found_target_message(image, self.target_class_name)
+                            self.notification.send_found_target_message(self.target_class_name, PATH_IMG)
                 # 推論結果がターゲット以外の場合
                 else:
                     if first_notification == False:
@@ -103,7 +105,7 @@ class App:
         cv2.destroyAllWindows()
         self.logger.info('normal termination')
         
-class Error(Exception):
+class Camera_error(Exception):
     pass
     
     
