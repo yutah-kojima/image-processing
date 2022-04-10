@@ -14,9 +14,9 @@ class Notification:
         self.channel = NOTIFICATION["channel"]
         self.client = WebClient(token)
         
-    def send_found_target_message(self, target, PATH_IMG):
+    def send_found_target_message(self, target_class_name, PATH_IMG):
 
-        message = "{}がいます。".format(target)      
+        message = f"{target_class_name}がいます。"      
                 
         #ファイルの作成日
         while True:
@@ -33,8 +33,8 @@ class Notification:
         self.logger.info('Success sending message & image')
         return r
     
-    def send_target_left_message(self, target, staying_time):
-        message = '{}は{:.0f}秒間居ました。'.format(target, staying_time)
+    def send_target_left_message(self, target_class_name, staying_timer):
+        message = f'{target_class_name}は{staying_timer:.0f}秒間居ました。'
         r = self.client.chat_postMessage(channel=self.channel, text=message)
         self.logger.info('Success sending message')
         return r

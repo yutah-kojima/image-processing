@@ -47,7 +47,7 @@ class Predictor(object):
             #画像処理
             outputs = postprocess(outputs, self.num_classes, self.nmsthre, class_agnostic=True)
             #推論時間ログ
-            self.logger.info("Infer time: {:.4f}s".format(time.time() - t0))
+            self.logger.info(f"Infer time: {(time.time() - t0):.4f}s")
         return outputs, img_info
 
     def visual(self, output, img_info, cls_conf=0.35):

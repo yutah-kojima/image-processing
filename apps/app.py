@@ -70,15 +70,15 @@ class App:
                     # ターゲット初回発見時のログ
                     if found_target_first_time == True:
                         found_target_time = time.time()
-                        self.logger.info('I found {}!!'.format(self.target_class_name))
+                        self.logger.info(f'I found {self.target_class_name}!!')
                         found_target_first_time = False
                         first_notification = True
                     staying_timer = time.time() - found_target_time
-                    self.logger.info('{} has been staying for {:.2f}s'.format(self.target_class_name, staying_timer))
+                    self.logger.info(f'{self.target_class_name} has been staying for {staying_timer:.2f}s')
                     # 滞留時間とターゲットの有無でSlackへ画像送信
                     if staying_timer >= self.set_timer and first_notification == True:
                         first_notification = False
-                        self.logger.info('{} has stayed over {:.0f}s!'.format(self.target_class_name, staying_timer)) 
+                        self.logger.info(f'{self.target_class_name} has stayed over {staying_timer:.0f}s!') 
                         cv2.imwrite(PATH_IMG, frame)
                         if self.allow_notification == True:
                             self.notification.send_found_target_message(self.target_class_name, PATH_IMG)
