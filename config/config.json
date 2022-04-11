@@ -5,7 +5,7 @@
         "module_name": "yolox.exp.default.yolox_tiny",
         "weight_file": "YOLOX/weights/yolox_tiny.pth",
         "set_timer": 5,
-        "allow_notification": "False"
+        "allow_notification": false
 
     },
     "NOTIFICATION":{
