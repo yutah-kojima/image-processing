@@ -23,5 +23,10 @@ def test_send_found_target_message(test_conf):
 
 def test_target_left_message(test_conf):
     notification = Notification(test_conf)
-    response = notification.send_target_left_message("person", 10)
-    assert response.status_code == 200
+    try:
+        response = notification.send_target_left_message("person", 10)
+    except Exception as e:
+        raise Exception('config.jsonのSlack tokenもしくはchannelが間違っています。')
+    else:
+        assert response.status_code == 200
+    
