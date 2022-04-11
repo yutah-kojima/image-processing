@@ -62,5 +62,7 @@ pip install -r requirements.txt
 
 ##  テスト  
 実行場所は`image_processing`ディレクトリ上で行います。
-
+```
+pytest
+```
 
