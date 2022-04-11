@@ -43,22 +43,24 @@ https://yolox.readthedocs.io/en/latest/model_zoo.html
 config/config.json  
 で設定を行います。  
 <br>
-token               :   Slackのbotトークン ex.xoxb-*********-*********-***********  
-channel             :   Slackの通知したいチャンネル名 ex.#notification  
-weight_name         :   学習済みモデル名  ex.yolox_tiny  
-weight_file         :   学習済みモデルのパス ex.YOLOX/weights/yolox_tiny.pth  
-set_timer           :   通知する際のターゲットの滞在時間 ex.5(ターゲットが５秒滞在すると通知されます。)  
-allow_notification  :   Slack通知の有無（True:通知する, False:通知しない）  
 camera_num          :   アクセスするカメラの番号 ex.0 （特に指定がなければ[0]）  
 target_class        :   ターゲットクラスの番号　ex.0 （static/Class_table.pngを参照してください。)　　
-<br>
+module_name         :   学習済みモデルのモジュール名  ex."yolox.exp.defalt.yolox_****"   
+weight_file         :   学習済みモデルのパス ex.YOLOX/weights/yolox_tiny.pth  
+set_timer           :   通知する際のターゲットの滞在時間 ex.5(ターゲットが５秒滞在すると通知されます。)  
+allow_notification  :   Slack通知の有無（true:通知する, false:通知しない）  
+token               :   Slackのbotトークン ex."xoxb-***********"  
+channel             :   Slackの通知したいチャンネル名 ex."#notification"  
+<br>  
 
 ##  起動
 必要なモジュールをインストールします。
 ```
 pip install -r requirements.txt
 ```  
-<br>
+<br>  
 
+##  テスト  
+実行場所は`image_processing`ディレクトリ上で行います。
 
 
